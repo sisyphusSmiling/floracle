@@ -1,6 +1,6 @@
 pub contract interface IFloracle {
   
-  pub let requestBodySeparator: String
+  pub let serializationSeparator: String
   
   pub let RequestorStoragePath: StoragePath
   pub let OracleStoragePath: StoragePath
@@ -61,7 +61,7 @@ pub contract interface IFloracle {
   pub resource interface Oracle {
     /// Requestor.id : Medium Capability
     pub let mediumCapabilities: {UInt64: Capability<&AnyResource{Medium}>}
-    pub fun fulfillRequest(requestorID: UInt64, requestID: UInt64)
+    pub fun fulfillRequest(requestorID: UInt64, requestID: UInt64, response: AnyStruct{Response})
   }
 }
  

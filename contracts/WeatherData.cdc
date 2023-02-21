@@ -3,7 +3,7 @@ import LocationMetadataViews from "./LocationMetadataViews.cdc"
 
 pub contract WeatherData : IFloracle {
 
-  pub let requestBodySeparator: String
+  pub let serializationSeparator: String
 
   pub let RequestorStoragePath: StoragePath
   pub let OracleStoragePath: StoragePath
@@ -39,12 +39,12 @@ pub contract WeatherData : IFloracle {
 
     pub fun toString(): String {
       // return self.city
-      //   .concat(WeatherData.requestBodySeparator)
+      //   .concat(WeatherData.serializationSeparator)
       //   .concat(self.country)
-      //   .concat(WeatherData.requestBodySeparator)
+      //   .concat(WeatherData.serializationSeparator)
       //   .concat(self.time.toString())
       return self.geoCoordinates.toString()
-        .concat(WeatherData.requestBodySeparator)
+        .concat(WeatherData.serializationSeparator)
         .concat(self.time.toString())
     }
 
@@ -55,12 +55,22 @@ pub contract WeatherData : IFloracle {
 
   pub struct WeatherLocationResponseBody: IFloracle.ResponseBody {
     pub let temperature: UInt8
-    pub let humidity: UInt8
-    pub let precipitation: UInt8
-    pub let wind: UInt8
-    // pub fun toString(): String {
+    // pub let humidity: UInt8
+    // pub let precipitation: UInt8
+    // pub let wind: UInt8
 
-    // }
+    init(temperature: UInt8) {
+      self.temperature = temperature
+    }
+    pub fun toString(): String {
+      return self.temperature.toString()
+        // .concat(WeatherData.serializationSeparator)
+        // .concat(self.humidity)
+        // .concat(WeatherData.serializationSeparator)
+        // .concat(self.precipitation)
+        // .concat(WeatherData.serializationSeparator)
+        // .concat(self.wind)
+    }
   }
 
   // Struct representing a weather data request
@@ -141,10 +151,14 @@ pub contract WeatherData : IFloracle {
 
     /* OraclePublic */
     pub fun provideMediumCapability(requestorID: &{IFloracle.RequestorID}, mediumCap: Capability<&{IFloracle.Medium}>) {
-      // TODO
+      if let currentCap = self.mediumCapabilities.remove(key: requestorID.id) {
+        self.mediumCapabilities.insert(key: requestorID.id, mediumCap)
+      } else {
+        self.mediumCapabilities.insert(key: requestorID.id, mediumCap)
+      }
     }
     /* Oracle */
-    pub fun fulfillRequest(requestorID: UInt64, requestID: UInt64) {
+    pub fun fulfillRequest(requestorID: UInt64, requestID: UInt64, response: AnyStruct{IFloracle.Response}) {
       // TODO
     }
   }
@@ -158,7 +172,7 @@ pub contract WeatherData : IFloracle {
   }
 
   init() {
-    self.requestBodySeparator = "|"
+    self.serializationSeparator = "|"
 
     self.RequestorStoragePath = /storage/WeatherDataRequestor
     self.OracleStoragePath = /storage/WeatherDataOracle

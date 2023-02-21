@@ -4,55 +4,51 @@ pub contract LocationMetadataViews {
   pub let longHemispheres: [String]
 
   pub struct GeographicCoordinates {
-    pub let latDegrees: UInt8
-    pub let latMinutes: UInt8
-    pub let latHemisphere: String
-    pub let longDegrees: UInt8
-    pub let longMinutes: UInt8
-    pub let longHemisphere: String
+    pub let latDegrees: Int16
+    pub let latDecimals: UInt16
+    pub let longDegrees: Int16
+    pub let longDecimals: UInt16
 
     init(
-      latDegrees: UInt8,
-      latMinutes: UInt8,
-      latHemisphere: String,
-      longDegrees: UInt8,
-      longMinutes: UInt8,
-      longHemisphere: String
+      latDegrees: Int16,
+      latDecimals: UInt16,
+      longDegrees: Int16,
+      longDecimals: UInt16
     ) {
       pre {
-        LocationMetadataViews.latHemispheres.contains(latHemisphere) &&
-        LocationMetadataViews.longHemispheres.contains(longHemisphere):
-          "Hemispheres are invalid!"
-        latDegrees <= 180 && longDegrees <= 180: 
-          "Latitude & longitude degrees are invalid!"
-        latMinutes < 60 && longMinutes < 60:
-          "Latitude & longitude minutes are invalid!"
+        latDegrees >= -180 && latDegrees <= 180: 
+          "Latitude degrees are invalid!"
+        longDegrees >= -180 && longDegrees <= 180: 
+          "Longitude degrees are invalid!"
       }
       self.latDegrees = latDegrees
-      self.latMinutes = latMinutes
-      self.latHemisphere = latHemisphere
+      self.latDecimals = latDecimals
       self.longDegrees = longDegrees
-      self.longMinutes = longMinutes
-      self.longHemisphere = longHemisphere
+      self.longDecimals = longDecimals
     }
 
     pub fun toString(): String {
       return self.latDegrees.toString()
-        .concat("˚")
-        .concat(self.latMinutes.toString())
-        .concat("'")
-        .concat(self.latHemisphere)
+        .concat(".")
+        .concat(self.latDecimals.toString())
         .concat(",")
         .concat(self.longDegrees.toString())
-        .concat("˚")
-        .concat(self.longMinutes.toString())
-        .concat("'")
-        .concat(self.longHemisphere)
+        .concat(".")
+        .concat(self.longDecimals.toString())
     }
   }
   
   init() {
     self.latHemispheres = ["N", "S"]
     self.longHemispheres = ["E", "W"]
+  }
+}
+
+
+transaction {
+  prepare(signer: AuthAccount) {
+    if signer.borrow<&MyContract.MyResource>(from: /storage/MyResource) == nil {
+      signer.save(<-MyContract.createMyResource, to: /storage/MyResource)
+    }
   }
 }
