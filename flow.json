@@ -1,5 +1,8 @@
 {
 	"contracts": {
+		"IFloracle": "./contracts/IFloracle.cdc",
+		"WeatherData": "./contracts/WeatherData.cdc",
+		"LocationMetadataViews": "./contracts/LocationMetadataViews.cdc",
 		"FungibleToken": {
 			"source": "./contracts/utility/FungibleToken.cdc",
 			"aliases": {
